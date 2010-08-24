@@ -1,0 +1,15 @@
+#exportPattern("^[[:alpha:]]+")
+
+export(
+	# main functions
+	"hclustSO", "leaderSO",
+	# additional
+	"makeEnc", "encodeSO",
+	"computeTotal",
+	"empty.symObject","create.symData"
+	# datasets
+	#,"popul06f","popul06m"
+	)
+
+S3methods("print","symObject")
+S3methods("summary","symDdata")
