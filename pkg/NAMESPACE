@@ -6,10 +6,12 @@ export(
 	# additional
 	"makeEnc", "encodeSO",
 	"computeTotal",
-	"empty.symObject","create.symData"
+	"empty.symObject","create.symData", "as.symData"
 	# datasets
-	#,"popul06f","popul06m"
+	,"popul06f","popul06m"
+	# methods
+	,"print.symObject","summary.symData"
 	)
 
 S3methods("print","symObject")
-S3methods("summary","symDdata")
+S3methods("summary","symData")
