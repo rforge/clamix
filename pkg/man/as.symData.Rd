@@ -22,7 +22,7 @@ as.symData(L, nvnames = NULL)
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{
-Either \cofe{FALSE} or object \code{symData}. Object represents a list of
+Either \code{FALSE} or object \code{symData}. Object represents a list of
   \item{SOs}{vector of symbolic objects (class \code{symObject}). The transformed dataset.}
   \item{so}{An empty \code{symObject}.}
   \item{namedSO}{An empty \code{symObject} with names for categories of each variable.}

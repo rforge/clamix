@@ -276,13 +276,13 @@ print.symObject <- function(x,...){
   }
 }
 
-summary.symData <- function(x,...){
+summary.symData <- function(object,...){
   # summary of symData - vector of symObjects
   cat("summary symData",":","\n\n",sep=" ")
-  cat("Dimension (units x variables):", length(x$SOs),"x",length(x$so),"\n",sep=" ")
-  cat("Type of distributions:", x$type,"\n", sep=" ")
+  cat("Dimension (units x variables):", length(object$SOs),"x",length(object$so),"\n",sep=" ")
+  cat("Type of distributions:", object$type,"\n", sep=" ")
   cat("Outlook of symObject: ","\n")
-  print(x$namedSO)
+  print(object$namedSO)
 }
 
 create.symData <- function(datalist,type="gDist",alpha=NULL){

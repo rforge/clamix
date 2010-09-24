@@ -8,10 +8,10 @@ Summary Method for Object symData
 Summary method for object \code{symData}.
 }
 \usage{ 
-\method{summary}{symData}(x, \dots)  
+\method{summary}{symData}(object, \dots)  
 }
 \arguments{
-  \item{x}{
+  \item{object}{
      object \code{symData}
 }
   \item{\dots}{

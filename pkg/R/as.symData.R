@@ -9,6 +9,7 @@ as.symData <- function(L,nvnames= NULL){
       L1 <- L
     else
       L1 <- L[[1]]
+    nVar <- length(L1)
     nCats <- NULL
     nnames <- vector(mode="list",length(L1))
     for (i in (1:length(L1))){
