@@ -8,7 +8,7 @@ export(
 	"computeTotal",
 	"empty.symObject","create.symData", "as.symData"
 	# datasets
-	,"popul06f","popul06m"
+	#,"popul06f","popul06m"
 	# methods
 	,"print.symObject","summary.symData"
 	)
