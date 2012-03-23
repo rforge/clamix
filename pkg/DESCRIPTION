@@ -3,8 +3,8 @@ Type: Package
 Title: Clustering Symbolic Objects Described by Discrete Distributions
 Version: 0.1
 Date: 2010-08-17
-Author: Vladimir Batagelj
-Maintainer: Vladimir Batagelj <vladimir.batagelj@fmf.uni-lj.si>
+Author: Vladimir Batagelj, Natasa Kejzar
+Maintainer: Vladimir Batagelj <vladimir.batagelj@fmf.uni-lj.si> Natasa Kejzar <natasa.kejzar@mf.uni-lj.si>
 Description: Symbolic objects can be described with distributions (in order to store more information than just mean values). Clamix implements two clustering methods for symbolic objects: the adapted leaders method and the adapted agglomerative hierarchical clustering Ward's method. Both methods are compatible - they can be viewed as two approaches for solving the same clustering optimization problem. In the obtained clustering to each cluster is assigned its leader. The descriptions of the leaders offer simple interpretation of the clusters characteristics. The leaders method enables us to efficiently solve clustering problems with large number of units; while the agglomerative method is applied on the obtained leaders and enables us to decide upon the right number of clusters on the basis of the corresponding dendrogram.
 License: GPL-2
 LazyLoad: yes
