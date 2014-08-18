@@ -1,7 +1,7 @@
 \name{makeEnc}
 \alias{makeEnc}
 \title{
-Function for "Equiprobabilistic" Encoding of Numerical Variables
+Function for "equiprobabilistic" encoding of numerical variables
 }
 \description{
 Prints out "equiprobabilistic" encodings (categorization) for numerical variables.
@@ -18,20 +18,11 @@ makeEnc(var, name, k, file="")
 }
   \item{file}{file to write encoding into, default "" - to std. output}
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
 \value{
 The encoding is printed out and is to be used with \code{\link{encodeSO}} function for encoding numerical variables into variables suitable for \code{symObject}.
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
 \author{
 Vladimir Batagelj
-}
-\note{
-%%  ~~further notes~~
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~

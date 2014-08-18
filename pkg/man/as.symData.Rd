@@ -1,7 +1,7 @@
 \name{as.symData}
 \alias{as.symData}
 \title{
-Creates Object symData from a list if possible
+Creates object symData from a list if possible
 }
 \description{
 Creates object \code{symData} from a list of \code{symObject}s. If not returns \code{FALSE}.
@@ -18,9 +18,6 @@ as.symData(L, nvnames = NULL)
      names of components of each variable in \code{symObject}.
 }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
 \value{
 Either \code{FALSE} or object \code{symData}. Object represents a list of
   \item{SOs}{vector of symbolic objects (class \code{symObject}). The transformed dataset.}
@@ -30,14 +27,8 @@ Either \code{FALSE} or object \code{symData}. Object represents a list of
   \item{type}{A type of \code{symData}. See the argument above.}
 %% ...
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
 \author{
    Natasa Kejzar
-}
-\note{
-%%  ~~further notes~~
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~

@@ -1,7 +1,7 @@
 \name{create.symData}
 \alias{create.symData}
 \title{
-Creates Object symData from a list of data.frames
+Creates object symData from a list of data.frames
 }
 \description{
 Creates object \code{symData} from a named list of data.frames. Each should \code{data.frame} represent one variable of the units.
@@ -21,9 +21,6 @@ create.symData(datalist, type = "gDist", alpha = NULL)
      a vector of weights for each variable (length(alpha) should be the same as number of data.frames). Default \code{NULL} - variables have equal weights.
 }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
 \value{
 Object \code{symData}. Represents a list of
   \item{SOs}{vector of symbolic objects (class \code{symObject}). The transformed dataset.}
@@ -33,14 +30,8 @@ Object \code{symData}. Represents a list of
   \item{type}{A type of \code{symData}. See the argument above.}
 %% ...
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
 \author{
    Natasa Kejzar
-}
-\note{
-%%  ~~further notes~~
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~

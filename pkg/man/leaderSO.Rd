@@ -1,13 +1,13 @@
 \name{leaderSO}
 \alias{leaderSO}
 \title{
-Adapted Leaders Clustering of Symbolic Data Described as Discrete Distributions
+Adapted leaders clustering of modal multi valued symbolic data
 }
 \description{
-Function to compute adapted leaders clustering for symbolic data described by discrete distributions. Data must be saved in a \code{symData} object.
+Function to compute adapted leaders clustering for modal multi valued symbolic data. Data must be saved in a \code{symData} object.
 }
 \usage{
-leaderSO(dataset, maxL)
+leaderSO(dataset, maxL, initial = NULL, stabil = 1e-06, report = TRUE, interact = TRUE,type = "euclid")
 }
 \arguments{
   \item{dataset}{
@@ -16,9 +16,21 @@ leaderSO(dataset, maxL)
   \item{maxL}{
 		number of clusters to produce
 }
+  \item{initial}{
+		provide initial leaders for clustering; if NULL they are selected randomly
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
+  \item{stabil}{
+		stability of the results (how close should be the minimization functions of two algorithm steps to exit)
+}
+  \item{report}{
+		produce report while working
+}
+  \item{interact}{
+		do you want interaction during algorithm steps
+}
+  \item{type}{
+  		switch describing dissimilarity measure used (currently "euclid" and "d4" (see Table 1 in reference article below) implemented)
+}
 }
 \value{
 Returned is a list of elements:
@@ -29,13 +41,10 @@ list(clust=clust,leaders=L,R=R,p=p)
 	\item{p}{sum of errors for each cluster}
 }
 \references{
-%% ~put references to the literature/web site here ~
+Kejzar,~N., Korenjak-Cerne,~S., and Batagelj,~V., Clustering of distributions: A case of patent citations, Journal of Classification, 28, 2, p. 156--183, (2011)
 }
 \author{
 	Vladimir Batagelj
-}
-\note{
-%%  ~~further notes~~
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~

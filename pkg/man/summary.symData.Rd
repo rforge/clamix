@@ -2,7 +2,7 @@
 \alias{summary.symData}
 \alias{symdata}
 \title{
-Summary Method for Object symData
+Summary method for object symData
 }
 \description{
 Summary method for object \code{symData}.
@@ -17,9 +17,6 @@ Summary method for object \code{symData}.
   \item{\dots}{
 }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
 \value{
 Object \code{symData}. Represents a list of
   \item{SOs}{vector of symbolic objects (class \code{symObject}). The transformed dataset.}
@@ -28,14 +25,8 @@ Object \code{symData}. Represents a list of
   \item{alpha}{A vector of weights}
   \item{type}{A type of \code{symData}. See the argument above.}
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
 \author{
 Natasa Kejzar
-}
-\note{
-%%  ~~further notes~~
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~

@@ -16,31 +16,7 @@
 # page 20
 # V. Batagelj / 28.7.2010
 # ---------------------------------------------------------------------
-acceptbin<-function(x,n,p){
-# computes the acceptability of p when x is observed and X is Bin(n,p)
-# adapted from Blaker (2000)
-  p1 <- 1-pbinom(x-1,n,p)
-  p2 <- pbinom(x,n,p)
-  a1 <- p1 + pbinom(qbinom(p1,n,p)-1,n,p)
-  a2 <- p2 + 1 - pbinom(qbinom(1-p2,n,p),n,p)
-  min(a1,a2)
-}
-acceptinterval<-function(x, n, level, tolerance=1e-04){
-# computes acceptability interval for p at 1-alpha equal to level
-# (in (0,1)) when x is an observed value of X which is Bin(n,p)
-# adapted from Blaker (2000)
-  lower <- 0; upper <- 1
-  if(x) {lower <- qbeta((1-level)/2,x,n-x+1)
-    while(acceptbin(x,n,lower) < (1-level)) lower <- lower+tolerance
-  }
-  if(x!=n) {upper <- qbeta(1-(1-level)/2,x+1,n-x)
-    while(acceptbin(x,n,upper) < (1-level)) upper <- upper-tolerance
-  }
-  c(lower=lower,upper=upper)
-}
-# acceptinterval(x=0,n=25,level=.95)
-# lower upper
-# 0 0.1275852
+
 
 # -----------------------------------------------------------------------
 
@@ -54,7 +30,7 @@ empty.symObject <- function(nCats){
 }
 
 # computes weighted squared Euclidean dissimilarity between SOs
-distSO <- function(X,Y,nVar,alpha){
+.distSO <- function(X,Y,nVar,alpha){
   d <- numeric(nVar)
   for(i in 1:nVar) {
     ln <- length(X[[i]]);
@@ -66,8 +42,26 @@ distSO <- function(X,Y,nVar,alpha){
   return(dis)
 }
 
+### DELTA_4 ADDED
+# computes delta_4 dissimilarity between SOs
+.distSO4 <- function(X,Y,nVar,alpha,penalty=1e6){
+  d <- numeric(nVar)
+  for(i in 1:nVar) {
+    ln <- length(X[[i]]);
+    nX <- as.double(X[[i]][[ln]]); nY <- as.double(Y[[i]][[ln]])
+    temp <- (X[[i]][-ln] - Y[[i]][-ln])**2/Y[[i]][-ln]
+    temp[which(is.nan(temp))] <- 0 # (0/0 becomes 0)
+    temp[which(is.infinite(temp))] <- penalty # X/0 becomes big number
+    d[[i]] <- nX*sum(temp)
+  }
+  dis <- as.numeric(d %*% alpha)
+  if (is.na(dis)) dis <- Inf
+  return(dis)
+}
+### DELTA_4 ADDED - END
+
 # computes dissimilarity between clusters
-distCl <- function(X,Y,nVar,alpha){
+.distCl <- function(X,Y,nVar,alpha){
   d <- numeric(nVar)
   for(i in 1:nVar) {
     ln <- length(X[[i]]);
@@ -76,6 +70,68 @@ distCl <- function(X,Y,nVar,alpha){
   }
   return(as.numeric(d %*% alpha)/2)
 }
+
+.leaders <- function(SOs,numSO,nVar,maxL,so,clust){
+  L <- vector("list",maxL)
+  for(k in 1:maxL){L[[k]] <- so; names(L)[[k]] <- paste("L",k,sep="")}
+  for (i in 1:numSO){
+    j <- clust[[i]]
+    for(k in 1:nVar)
+      L[[j]][[k]] <- L[[j]][[k]] + SOs[[i]][[k]]
+  }
+  return(L)
+}
+
+.zleader <- function(Lp,Lq,nVar,so){
+  LL <- so
+  for(t in 1:nVar)
+    LL[[t]] <- Lp[[t]] + Lq[[t]]
+  return(LL)
+}
+
+### DELTA_4 ADDED
+# computes delta_4 dissimilarity between clusters
+.distCl4 <- function(X,Y,nVar,alpha,Z,penalty=1e6){
+  d <- numeric(nVar)
+  for(i in 1:nVar) {
+    ln <- length(X[[i]]);
+    nX <- as.double(X[[i]][[ln]]); nY <- as.double(Y[[i]][[ln]])
+    temp1 <- (X[[i]][-ln] - Z[[i]][-ln])**2/Z[[i]][-ln]
+    temp2 <- (Y[[i]][-ln] - Z[[i]][-ln])**2/Z[[i]][-ln]
+    temp1[which(is.nan(temp1))] <- 0; temp2[which(is.nan(temp2))] <- 0 # (0/0 becomes 0)
+    temp1[which(is.infinite(temp1))] <- penalty; temp1[which(is.infinite(temp1))] <- penalty # X/0 becomes big number
+    d[[i]] <- nX*sum(temp1) + nY*sum(temp2)
+
+  }
+  return(as.numeric(d %*% alpha))
+}
+
+.leaders4 <- function(SOs,numSO,nVar,maxL,so,clust){
+  L <- vector("list",maxL)
+  for(k in 1:maxL){L[[k]] <- so; names(L)[[k]] <- paste("L",k,sep="")}
+  for (i in 1:numSO){
+    j <- clust[[i]]
+    for(k in nVar){
+      ln <- length(SOs[[i]][[k]]);n <- as.double(SOs[[i]][[k]][ln]); nL <- as.double(L[[j]][[k]][ln])
+      L[[j]][[k]][-ln] <- L[[j]][[k]][-ln] + SOs[[i]][[k]][-ln]**2*n
+      L[[j]][[k]][ln] <- L[[j]][[k]][ln] + SOs[[i]][[k]][ln]}
+  }
+  for(i in 1:maxL) for(j in nVar){
+    ln <- length(L[[i]][[j]])
+    L[[i]][[j]][-ln] <- sqrt(L[[i]][[j]][-ln]/L[[i]][[j]][ln])}
+  return(L)
+}
+
+.zleader4 <- function(Lp,Lq,nVar,so){
+  LL <- so
+  for(t in nVar){
+    ln <- length(Lp[[t]])
+    LL[[t]][-ln] <- sqrt(Lp[[t]][-ln]**2*Lp[[t]][ln] + Lq[[t]][-ln]**2*Lq[[t]][ln])/(sqrt(Lp[[t]][ln]+Lq[[t]][ln]))
+    LL[[t]][ln] <- Lp[[t]][ln] + Lq[[t]][ln]
+  }
+  return(LL)
+}
+### DELTA_4 ADDED - END
 
 # encode numerical vector using given encoding
 encodeSO <- function(x,encoding,codeNA){
@@ -89,26 +145,31 @@ encodeSO <- function(x,encoding,codeNA){
 #   dodaj omejitev na najmanjše število enot v skupini
 #   omejeni polmer
 
-leaderSO <- function(dataset,maxL){
+leaderSO <- function(dataset,maxL,initial=NULL,stabil=1e-6,report=TRUE,interact=TRUE,type="euclid"){
   #attach(dataset)
+  # initial - initial clustering into maxL clusters 
   so <- dataset$so; alpha <- dataset$alpha
   SOs <- dataset$SOs; nVar <- length(so)
   numSO <- length(SOs)
   L <- vector("list",maxL); Ro <- numeric(maxL)
-# random partition into maxL clusters
-  clust <- sample(1:maxL,numSO,replace=TRUE)
+  if(is.null(initial)){
+  # random partition into maxL clusters
+    clust <- sample(1:maxL,numSO,replace=TRUE)
+  }else{clust <- initial}
   tim <- 1; step <- 0
+  pOld <- double(maxL) ### important when interact = FALSE
   repeat {
     step <- step+1
   # new leaders - determine the leaders of clusters in current partition
-    for(k in 1:maxL){L[[k]] <- so; names(L)[[k]] <- paste("L",k,sep="")}
-    for(i in 1:numSO){j <- clust[[i]];
-      for(k in 1:nVar) L[[j]][[k]] <- L[[j]][[k]] + SOs[[i]][[k]] }
+    if(type=="euclid") L <- .leaders(SOs,numSO,nVar,maxL,so,clust)
+    else L <- .leaders4(SOs,numSO,nVar,maxL,so,clust)
   # new partition - assign each unit to the nearest new leader
     clust <- integer(numSO)
     R <- numeric(maxL); p <- double(maxL)
     for(i in 1:numSO){d <- double(maxL)
-      for(k in 1:maxL){d[[k]] <- distSO(SOs[[i]],L[[k]],nVar,alpha)}
+      for(k in 1:maxL){
+        if(type=="euclid") d[[k]] <- .distSO(SOs[[i]],L[[k]],nVar,alpha)
+        else d[[k]] <- .distSO4(SOs[[i]],L[[k]],nVar,alpha)}
       r <- min(d); j <- which(d==r)
       if(length(j)==0){
         cat("unit",i,"\n",d,"\n"); flush.console(); print(SOs[[i]]); flush.console()
@@ -119,21 +180,30 @@ leaderSO <- function(dataset,maxL){
       p[[j]] <- p[[j]] + r; if(R[[j]]<r) R[[j]]<- r
     }
   # report
-    cat("\nStep",step,"\n")
-    print(table(clust)); print(R); print(Ro-R); Ro <- R;
-    print(p); print(sum(p)); flush.console()
+    if(report){
+      cat("\nStep",step,"\n")
+      print(table(clust)); print(R); print(Ro-R); Ro <- R;
+      print(p); print(sum(p)); flush.console()
+    }
     tim <- tim-1
-    if(tim<1){
+    if(tim<1 && interact){   ## added for possibility interact = FALSE
       ans <- readline("Times repeat = ")
       tim <- as.integer(ans); if (tim < 1)  break
-    }
+    }else{                  ## added for possibility interact = FALSE
+      if(!interact){
+        if(tim!=0){ ## at least one run of leaders already run and stabilized
+          print(pOld);print(p);flush.console()
+          if(max(pOld-p)<stabil) break}
+        pOld <- p}}
   # in the case of empty cluster put in the most distant SO
     repeat{
       t <- table(clust); em <- setdiff(1:maxL,as.integer(names(t)))
       if(length(em)==0) break
       j <- em[[1]]; rmax <- 0; imax <- 0
       for(i in 1:numSO){d <- double(maxL)
-        for(k in 1:maxL){d[[k]] <- distSO(SOs[[i]],L[[k]],nVar,alpha)}
+        for(k in 1:maxL){
+          if(type=="euclid") d[[k]] <- .distSO(SOs[[i]],L[[k]],nVar,alpha)
+          else d[[k]] <- .distSO4(SOs[[i]],L[[k]],nVar,alpha)}
         r <- max(d);  if(rmax<r) {rmax <- r; imax <- i}
       }
       clust[[imax]] <- j; L[[j]] <- SOs[[imax]]
@@ -152,7 +222,7 @@ leaderSO <- function(dataset,maxL){
 # VB, 16. julij 2010
 #   imena notranjih toèk v drevesu
 
-hclustSO <- function(dataset){
+hclustSO <- function(dataset,type="euclid"){
 # compute order of dendrogram
   orDendro <- function(i){if(i<0) return(-i)
     return(c(orDendro(m[i,1]),orDendro(m[i,2])))}
@@ -163,7 +233,11 @@ hclustSO <- function(dataset){
 # each unit is a cluster; compute inter-cluster dissimilarity matrix
   D <- matrix(nrow=numL,ncol=numL); diag(D) <- Inf
   for(i in 1:numLm) for(j in (i+1):numL) {
-      D[i,j] <- distCl(L[[i]],L[[j]],nVar,alpha); D[j,i] <- D[i,j]
+      if(type=="euclid")D[i,j] <- .distCl(L[[i]],L[[j]],nVar,alpha)
+      else{ Z <- .zleader4(L[[i]],L[[j]],nVar,so)
+        D[i,j] <- .distCl4(L[[i]],L[[j]],nVar,alpha,Z)
+      }
+      D[j,i] <- D[i,j]
   }
   active <- 1:numL; m <- matrix(nrow=numLm,ncol=2)
   node <- rep(0,numL); h <- numeric(numLm); LL <- vector("list",numLm)
@@ -179,13 +253,19 @@ hclustSO <- function(dataset){
       } else {m[k,1] <- node[p]; Lp <- LL[[node[p]]]}
     if(node[q]==0){m[k,2] <- -q; Lq <- L[[q]]
       } else {m[k,2] <- node[q]; Lq <- LL[[node[q]]]}
-    for(t in 1:nVar) LL[[k]][[t]] <- Lp[[t]] + Lq[[t]]
+    if(type=="euclid")LL[[k]] <- .zleader(Lq,Lp,nVar,so)
+    else LL[[k]] <- .zleader4(Lq,Lp,nVar,so)
     active <- setdiff(active,p)
     Lpq <- LL[[k]]
   # determine dissimilarities to the new cluster
     for(s in setdiff(active,q)){
       if(node[s]==0){Ls <- L[[s]]} else {Ls <- LL[[node[s]]]}
-      D[q,s] <- distCl(Lpq,Ls,nVar,alpha); D[s,q] <- D[q,s]
+      if(type=="euclid")D[q,s] <- .distCl(Lpq,Ls,nVar,alpha)
+      else{
+        Z <- .zleader4(Lpq,Ls,nVar,so)
+        D[q,s] <- .distCl4(Lpq,Ls,nVar,alpha,Z)
+      }
+      D[s,q] <- D[q,s]
     }
     node[[q]] <- k
   }
@@ -196,52 +276,6 @@ hclustSO <- function(dataset){
   return(hc)
 }
 
-# prints values that are significantely different from the average
-testSOvar <- function(SO,var,total,a){
-  ln <- length(total[[var]]); lnM <- ln-1
-  pt <- total[[var]][-ln]/total[[var]][[ln]]
-  pj <- SO[[var]][-ln]/SO[[var]][[ln]]
-  for(k in 1:lnM) {
-    ai <- acceptinterval(x=total[[var]][[k]], n=total[[var]][[ln]], level=1-a)
-    if(pj[[k]] > ai[[2]]) cat(format(names(total[[var]])[[k]],width=15,justify="right"),
-      format(c(pj[[k]],ai[[2]],pt[[k]],ai[[1]],(pj[[k]]-pt[[k]])/(ai[[2]]-pt[[k]])),
-      width=12,justify="left",digits=5,nsmall=7),"\n")
-    if(pj[[k]] < ai[[1]]) cat(format(names(total[[var]])[[k]],width=15,justify="right"),
-      format(c(pj[[k]],ai[[2]],pt[[k]],ai[[1]],(pt[[k]]-pj[[k]])/(pt[[k]]-ai[[1]])),
-      width=12,justify="left",digits=5,nsmall=7),"\n")
-  }
-}
-
-# prints values that are significantely larger than the average
-testSOvarP <- function(SO,var,total,a){
-  ln <- length(total[[var]]); lnM <- ln-1
-  pt <- total[[var]][-ln]/total[[var]][[ln]]
-  pj <- SO[[var]][-ln]/SO[[var]][[ln]]
-  for(k in 1:lnM) {
-    ai <- acceptinterval(x=total[[var]][[k]], n=total[[var]][[ln]], level=1-a)
-    if(pj[[k]] > ai[[2]]) cat(format(names(total[[var]])[[k]],width=15,justify="right"),
-      format(c(pj[[k]],ai[[2]],pt[[k]],ai[[1]],(pj[[k]]-pt[[k]])/(ai[[2]]-pt[[k]])),
-      width=12,justify="left",digits=5,nsmall=7),"\n")
-  }
-}
-
-# prints values that are significantely different from the average
-testSOvarQ <- function(SO,var,total,a,qmin){
-  ln <- length(total[[var]]); lnM <- ln-1
-  pt <- total[[var]][-ln]/total[[var]][[ln]]
-  pj <- SO[[var]][-ln]/SO[[var]][[ln]]
-  for(k in 1:lnM) {
-    ai <- acceptinterval(x=total[[var]][[k]], n=total[[var]][[ln]], level=1-a)
-    if(pj[[k]] > ai[[2]]) {q <- (pj[[k]]-pt[[k]])/(ai[[2]]-pt[[k]])
-      if(q>qmin) cat(format(names(total[[var]])[[k]],width=15,justify="right"),
-      format(c(pj[[k]],ai[[2]],pt[[k]],ai[[1]],q),
-      width=12,justify="left",digits=5,nsmall=7),"\n")}
-    if(pj[[k]] < ai[[1]]) {q <- (pt[[k]]-pj[[k]])/(pt[[k]]-ai[[1]])
-      if(q>qmin) cat(format(names(total[[var]])[[k]],width=15,justify="right"),
-      format(c(pj[[k]],ai[[2]],pt[[k]],ai[[1]],q),
-      width=12,justify="left",digits=5,nsmall=7),"\n")}
-  }
-}
 
 # prints "equiprobabilistic" encodings for numerical variables
 makeEnc <- function(var,name,k,file=""){
@@ -303,7 +337,13 @@ create.symData <- function(datalist,type="gDist",alpha=NULL){
   dataset <- vector(mode="list",length=nVar)
   nCats <- vector(mode="numeric",length=nVar)
   for (i in 1:nVar){
-    dataset[[i]] <- cbind(datalist[[i]],0,apply(datalist[[i]],1,sum))
+    ### changed for probabilities - if clause ###
+    n <- apply(datalist[[i]],1,sum)
+    if(type=="pDist")
+      dataset[[i]] <-
+        cbind(datalist[[i]]/n,0,n)
+    else
+      dataset[[i]] <- cbind(datalist[[i]],0,n)
     coldata <- ncol(dataset[[i]])
     nCats[i] <- coldata-1
     colnames(dataset[[i]])[[coldata-1]] <- "NA"; colnames(dataset[[i]])[[coldata]] <- "num"

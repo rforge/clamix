@@ -1,17 +1,5 @@
-#exportPattern("^[[:alpha:]]+")
+import(cluster)
 
-export(
-	# main functions
-	"hclustSO", "leaderSO",
-	# additional
-	"makeEnc", "encodeSO",
-	"computeTotal",
-	"empty.symObject","create.symData", "as.symData"
-	# datasets
-	#,"popul06f","popul06m"
-	# methods
-	,"print.symObject","summary.symData"
-	)
-
-S3methods("print","symObject")
-S3methods("summary","symData")
+exportPattern("^[^\\.]")
+S3method(print, symObject)
+S3method(summary, symData)

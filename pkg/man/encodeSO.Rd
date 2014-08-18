@@ -2,7 +2,7 @@
 \alias{encodeSO}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Encode Numerical Vector using given Encoding
+Encode numerical vector using given encoding
 }
 \description{
 Function encodes numerical vector using given encoding. Encoding could be obtained by function \code{makeEnc}.
@@ -19,19 +19,10 @@ encodeSO(x, encoding, codeNA)
   \item{codeNA}{code (or number) for \code{NA}.
 }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
 \value{
 Returns category into which the number \code{x} is encoded.}
-\references{
-%% ~put references to the literature/web site here ~
-}
 \author{
 Vladimir Batagelj
-}
-\note{
-%%  ~~further notes~~
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~

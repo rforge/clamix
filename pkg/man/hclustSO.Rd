@@ -1,21 +1,21 @@
 \name{hclustSO}
 \alias{hclustSO}
 \title{
-Adapted Hierarchical Clustering of Symbolic Data Described as Discrete Distributions
+Adapted hierarchical clustering of modal multi valued modal symbolic data
 }
 \description{
-Function to compute adapted hierarchical clustering for symbolic data described by discrete distributions. Data must be saved in a \code{symData} object.
+Function to compute adapted hierarchical clustering for modal multi valued modal symbolic data. Data must be saved in a \code{symData} object.
 }
 \usage{
-hclustSO(dataset)
+hclustSO(dataset,type = "euclid")
 }
 \arguments{
   \item{dataset}{
 		\code{symData} object
 }
+  \item{type}{
+  		switch describing dissimilarity measure used (currently "euclid" and "d4" (see Table 1 in reference article below) implemented)
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
 }
 \value{
 An object of class \code{\link{hclust}} which describes the tree produced by the clustering process. The object is a list (see hclust) and additional component: 
@@ -23,13 +23,10 @@ An object of class \code{\link{hclust}} which describes the tree produced by the
 	\item{leaders}{A vector of \code{symObject}s that represent leaders obtained during merging of clusters}
 }
 \references{
-%% ~put references to the literature/web site here ~
+Kejzar,~N., Korenjak-Cerne,~S., and Batagelj,~V., Clustering of distributions: A case of patent citations, Journal of Classification, 28, 2, p. 156--183, (2011)
 }
 \author{
 	Vladimir Batagelj
-}
-\note{
-%%  ~~further notes~~
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~

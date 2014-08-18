@@ -1,13 +1,13 @@
-citHeader("To cite package ’clamix’ in publications use:") 
+citHeader("To cite package 'clamix' in publications use:") 
 desc <- packageDescription("clamix") 
-year <- 2010 
+year <- 2014 
 citEntry(entry="unpublished", 
-	title = "Clamix – an R-Package for Clustering Symbolic Objects Described by Discrete Distributions", 
-	author = personList(as.person("Natasa Kejzar"), 
-		as.person("Simona Korenjak-Cerne"), 
-		as.person("Vladimir Batagelj")), 
+	title = "Clamix – an R-package for custering modal multi valued symbolic data", 
+	author = personList(as.person("Vladimir Batagelj"),
+	    as.person("Natasa Kejzar"), 
+		as.person("Simona Korenjak-Cerne")), 
 	year = year, 
 	note = "in preparation",
 	textVersion = 
-		paste("N. Kejzar, S. Korenjak-Cerne and V.Batagelj (", year, "). Clamix – an R-Package for Clustering Symbolic Objects Described by Discrete Distributions", sep="")
+		paste("V.Batagelj, N. Kejzar, S. Korenjak-Cerne (", year, "). Clamix – R-package for custering modal multi valued symbolic data", sep="")
 )
