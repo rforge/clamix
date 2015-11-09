@@ -28,7 +28,7 @@ Natasa Kejzar
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-\code{\link{empty.symObject}}, ~~~
+\code{\link{empty.symObject}}
 }
 \examples{
 object <- empty.symObject(c(18,18))
