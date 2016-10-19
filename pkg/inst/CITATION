@@ -1,6 +1,6 @@
 citHeader("To cite package 'clamix' in publications use:") 
 desc <- packageDescription("clamix") 
-year <- 2015 
+year <- 2016 
 citEntry(entry="unpublished", 
 	title = "Clamix - an R-package for custering modal multi valued symbolic data", 
 	author = personList(as.person("Vladimir Batagelj"),

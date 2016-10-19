@@ -7,7 +7,7 @@ Creates object symData from a list of data.frames
 Creates object \code{symData} from a named list of data.frames. Each should \code{data.frame} represent one variable of the units.
 }
 \usage{
-create.symData(datalist, type = "gDist", alpha = NULL)
+create.symData(datalist, type = "pDist", alpha = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -15,7 +15,7 @@ create.symData(datalist, type = "gDist", alpha = NULL)
      a named list of \code{data.frame}s. Each \code{data.frame} should represent one variable. Data.frames should be named as variables. Each dataframe should have the same number of rows (same number of units).
 }
   \item{type}{
-     type of \code{symData}. \dQuote{pDist} for probability, \dQuote{fDist} for frequency and \dQuote{gDist} for general data distribution.
+     type of \code{symData}. \dQuote{pDist} for probability with absolute total of \dQuote{rDist} for relative probability (total=1), or \dQuote{fDist} for frequency data distribution.
 }
   \item{alpha}{
      a vector of weights for each variable (length(alpha) should be the same as number of data.frames). Default \code{NULL} - variables have equal weights.
