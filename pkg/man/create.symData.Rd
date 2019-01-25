@@ -15,7 +15,7 @@ create.symData(datalist, type = "pDist", alpha = NULL)
      a named list of \code{data.frame}s. Each \code{data.frame} should represent one variable. Data.frames should be named as variables. Each dataframe should have the same number of rows (same number of units).
 }
   \item{type}{
-     type of \code{symData}. \dQuote{pDist} for probability with absolute total of \dQuote{rDist} for relative probability (total=1), or \dQuote{fDist} for frequency data distribution.
+     type of \code{symData}. \dQuote{pDist} for probability with absolute total of \dQuote{rDist} for relative probability (total=1), or \dQuote{fDist} for frequency data distribution. For some dissimilarities (d4-d6) empirical probabilities have to be positive. With \dQuote{pDist.KT} and \dQuote{rDist.KT} we correct probabilities using Krichevsky-Trofimov estimator.
 }
   \item{alpha}{
      a vector of weights for each variable (length(alpha) should be the same as number of data.frames). Default \code{NULL} - variables have equal weights.

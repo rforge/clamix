@@ -18,8 +18,10 @@
 # ---------------------------------------------------------------------
 
 ## clamix12_01 - tableDiss2.R klicemo sami -- S 10. 7. 2016, dodane vse razlicnosti d1 - d6
-## clamix12_02 - v "create.symdata" dodana moznost "rDist" za samo relativne porazdelitve, vsota frekvenc = 1
-## clamix12_04 - "create.Symdata" ni NA vrednosti (te naj se dodajo kot svoja kategorija v data.frame-u)
+## clamix12_02 - v "create.symData" dodana moznost "rDist" za samo relativne porazdelitve, vsota frekvenc = 1
+## clamix12_04 - "create.symData" ni NA vrednosti (te naj se dodajo kot svoja kategorija v data.frame-u)
+## clamix12_05 - "leaderSO" dodana 2 if stavka za "report", 
+##             - "create.symData" - dodana rDist.KT in pDist.KT (Krichevsky-Trofimov estimator za relativne frekvence)
 
 
 # -----------------------------------------------------------------------
@@ -93,7 +95,8 @@ leaderSO <- function(dataset,maxL,initial=NULL,stabil=1e-6,report=TRUE,interact=
     }else{                  ## added for possibility interact = FALSE
       if(!interact){
         if(tim!=0){ ## at least one run of leaders already run and stabilized
-          print(pOld);print(p);flush.console()
+          if(report){
+            print(pOld);print(p);flush.console()}
           if(max(pOld-p)<stabil) break}
         pOld <- p}}
   # in the case of empty cluster put in the most distant SO (from cluster with at least 2 units)
@@ -109,8 +112,8 @@ leaderSO <- function(dataset,maxL,initial=NULL,stabil=1e-6,report=TRUE,interact=
         r <- max(d);  if(rmax<r) {rmax <- r; imax <- i}
       }
       clust[[imax]] <- j; L[[j]] <- SOs[[imax]]
-      cat("*** empty cluster",j,"- SO",imax,"transfered, rmax =",rmax,"\n")
-      flush.console()
+      if(report){
+        cat("*** empty cluster",j,"- SO",imax,"transfered, rmax =",rmax,"\n");flush.console()}
     }
   }
   #detach(dataset)
@@ -280,8 +283,10 @@ summary.symData <- function(object,...){
 ###### no NA values !!! ######
 
 create.symData <- function(datalist,type="pDist",alpha=NULL){
-  # TYPE - PDIST - SUM!?!? uses relative distribution, but save absolute total=n
+  # type pDist uses relative distribution, but save absolute total=n
   # type rDist uses only relative distribution, total=1
+  # type pDist.KT, rDist.KT - Krichevsky-Trofimov estimator for relative dist. (total=n, total=1)
+  # KT relative estimates for p_i = (x_i + 1/nCat)/(sum(x_i) + 1)
   # creates object symData
   # from list of dataframes
   nVar <- length(datalist)
@@ -300,19 +305,19 @@ create.symData <- function(datalist,type="pDist",alpha=NULL){
   for (i in 1:nVar){
     ### changed for probabilities - if clause ###
     n <- apply(datalist[[i]],1,sum)
-    if(type=="pDist")   ## use relative distribution, but save absolute total=n
-      dataset[[i]] <-
-        cbind(datalist[[i]]/n,n)
-    else
-      if(type=="rDist")   ## use only relative distribution, total=1
-        dataset[[i]] <-
-          cbind(datalist[[i]]/n,1)
-      else
-        dataset[[i]] <- cbind(datalist[[i]],n)
-      coldata <- ncol(dataset[[i]])
-      nCats[i] <- coldata-1
-      #colnames(dataset[[i]])[[coldata-1]] <- "NA"; 
-      colnames(dataset[[i]])[[coldata]] <- "num"
+    nCats[i] <- ncol(datalist[[i]])
+    if(type %in% c("pDist","rDist","pDist.KT","rDist.KT")){
+     if(type=="pDist")   ## use relative distribution, but save absolute total=n
+      dataset[[i]] <- cbind(datalist[[i]]/n,n)
+     if(type=="rDist")   ## use only relative distribution, total=1
+      dataset[[i]] <- cbind(datalist[[i]]/n,1)
+     if(type=="pDist.KT")   ## use KT relative distribution, but save absolute total=n
+      dataset[[i]] <- cbind((datalist[[i]]+1/nCats[i])/(n+1),n)
+     if(type=="rDist.KT")   ## use KT relative distribution, total=1
+      dataset[[i]] <- cbind((datalist[[i]]+1/nCats[i])/(n+1),1)
+    }else
+      dataset[[i]] <- cbind(datalist[[i]],n)
+    colnames(dataset[[i]])[[nCats[i]+1]] <- "num"
   }
   SOs <- vector(mode="list",length=n_units)
   for (i in 1:n_units){
